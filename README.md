@@ -1,6 +1,6 @@
-# Genius POS — Modern Upgrade
+# Genius POS — Web Integrated / Multi-Platform
 
-Genius POS is a user-ID-based POS workspace upgraded with 20 high-impact modern capabilities while retaining the supplied payment integration documentation and dedicated account pages.
+Genius POS is a user-ID-based POS workspace upgraded with 20 modern capabilities and now connected to a shared PostgreSQL REST API. The browser is a client; the API/database is the shared source of truth for web, mobile, desktop, kiosk, partner and future clients.
 
 ## 20 upgrades
 
@@ -25,23 +25,26 @@ Genius POS is a user-ID-based POS workspace upgraded with 20 high-impact modern 
 19. Dark mode.
 20. Responsive/accessibility foundation.
 
-## Security boundary
+## Web integration
 
-This repository is a browser prototype. Do not use localStorage as a secure identity database or store raw PAN, CVV, PIN, payment credentials, or production secrets there. Production authentication should use a server-side identity/session service. Production card collection should use the hosted/tokenized payment boundary documented in `hosted-card-integration.md`.
-
-Production passkeys require a server-generated WebAuthn challenge, origin/RP validation, credential persistence and replay protection.
-
-## Pages
-
-Authentication: `pages/signin.html`, `pages/signup.html`, `pages/onboarding.html`, `pages/two-step.html`.
-Account: `pages/my-profile.html`, `pages/account.html`, `pages/login-security.html`, `pages/business-information.html`, `pages/connected-accounts.html`, `pages/payment.html`, `pages/help.html`, `pages/support.html`.
-Operations: `pages/dashboard.html`, `pages/pos.html`, `pages/analytics.html`, `pages/customers.html`, `pages/transactions.html`, `pages/send.html`, `pages/receive.html`, `pages/inventory.html`, `pages/website.html`, `pages/employees.html`.
+- `server/index.mjs` — Express REST API + PostgreSQL shared data layer.
+- `assets/api.js` — browser API client, authentication token handling, incremental sync and JSON export.
+- `docs/API.md` — endpoint guide.
+- `docs/openapi.yaml` — API contract.
+- `Dockerfile` — container deployment.
 
 ## Run
 
 ```bash
+cp .env.example .env
 npm install
 npm start
 ```
 
-Serve the static pages from HTTP(S) rather than `file://` for service workers and WebAuthn.
+Required production settings: `DATABASE_URL` and a strong random `JWT_SECRET`. Configure `CORS_ORIGIN` for the web/mobile origins that are allowed to call the API. Tables are initialized automatically on first API start.
+
+Set `window.GENIUSPOS_API_URL` before the browser API client loads if the API lives on another domain, or save the API URL in `localStorage` under `geniuspos.apiUrl`.
+
+## Security boundary
+
+Do not use browser localStorage as the production identity database and never store raw PAN, CVV, PIN, payment credentials or production secrets there. Production card collection should continue through the hosted/tokenized PCI-validated payment boundary documented in `hosted-card-integration.md`. Use HTTPS in production.
