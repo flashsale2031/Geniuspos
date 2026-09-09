@@ -1,0 +1,13 @@
+{
+  "name": "geniuspos",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Genius POS payment integration derived from the supplied Bonds Bank POS package.",
+  "type": "module",
+  "scripts": {
+    "start": "node visa-direct-server.example.mjs"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
